@@ -46,3 +46,11 @@ def test_project_root_and_legacy_names(tmp_path, monkeypatch):
     monkeypatch.delenv("APPLYLOOP_IMAP_USER", raising=False)
     import_legacy_env()
     assert os.environ["APPLYLOOP_IMAP_USER"] == "x@example.com"
+
+
+def test_env_example_matches_template():
+    from pathlib import Path
+    from applyloop.config import STARTER_DIR
+    root = Path(__file__).resolve().parents[1] / ".env.example"
+    if root.exists():                       # source checkout: the repo copy must match what `init` writes
+        assert root.read_text() == (STARTER_DIR / "env.example").read_text()

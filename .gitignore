@@ -1,6 +1,7 @@
 # ── secrets ──
 .env
 .env.*
+!.env.example
 
 # ── your personal configuration (the *.example.yml templates are committed) ──
 config/applyloop.yml

@@ -48,7 +48,7 @@ Without TeX the agent still works but uses your PDFs untailored.
 
 | File | What to put there | Required |
 |---|---|---|
-| `.env` | AI key(s), Adzuna keys, alert-inbox app password (created by `applyloop init`) | AI / Adzuna / alerts |
+| `.env` | AI key(s), Adzuna keys, alert-inbox app password (created by `applyloop init`; sample in `.env.example`) | AI / Adzuna / alerts |
 | `config/profile.yml` | name, email, phone, links, location, target comp | yes |
 | `config/applyloop.yml` | role tracks + CV files, search, filters, apply mode, browser, AI | yes |
 | `config/answers.yml` | answers to screening questions (work auth, sponsorship, degree, school…) | yes — **review every line** |
