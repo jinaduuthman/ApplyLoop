@@ -1,0 +1,140 @@
+# applyloop configuration (config/applyloop.yml, created by `applyloop init`) — edit to taste.
+# Everything field-specific lives here, so the same code works for any profession.
+# Your identity (name, email, phone, links) lives in config/profile.yml; screening
+# answers in config/answers.yml; EEO answers in config/eeo.yml; API keys in .env.
+
+# ── CV tracks ──────────────────────────────────────────────────────────────
+# One track per kind of role you target, each with its own base CV. Every job is
+# routed to the best-matching track (title + description keywords) and gets that CV.
+# Base CVs can be LaTeX (.tex — tailored per job and recompiled) or a ready PDF.
+cv_dir: resumes                          # folder for relative cv paths (gitignored)
+tracks:
+  - id: data_engineering
+    label: Senior Data Engineer
+    cv: data_engineer.tex                # relative to cv_dir, or an absolute path
+    fallback_pdf: data_engineer.pdf      # used when LaTeX isn't installed
+    max_pages: 1
+    min_score: 3.5                       # don't queue below this fit score (0–5)
+    queries: ["Senior Data Engineer", "Data Engineer", "Analytics Engineer", "Data Platform Engineer"]
+    titles: ["data engineer", "analytics engineer", "data platform", "etl developer", "big data"]
+                                         # a job whose title matches no active track is dropped
+    keywords: [spark, kafka, airflow, dbt, snowflake, bigquery, databricks, etl, data pipeline, lakehouse]
+
+  - id: ml_engineering
+    label: ML / AI Engineer
+    cv: ml_engineer.tex
+    max_pages: 2
+    min_score: 3.5
+    paused: true                         # paused = not searched or applied; delete the line to use it
+    queries: ["Machine Learning Engineer", "AI Engineer", "LLM Engineer"]
+    titles: ["machine learning engineer", "ml engineer", "ai engineer", "llm engineer", "mlops", "generative ai"]
+    keywords: [pytorch, llm, rag, fine-tuning, model serving, mlops, deep learning, nlp, vector search]
+
+# ── Search ─────────────────────────────────────────────────────────────────
+search:
+  sources: [adzuna, remotive, teal]     # no browser needed. Also: alerts (job-alert emails),
+                                        # indeed, glassdoor (browser; often blocked by bot checks)
+  location: "Austin, TX"                # your city
+  remote: true                          # also search "Remote"
+  posted_within_days: 7                 # drop older postings (`hunt --days 3` overrides per run)
+  work_mode: any                        # any | remote | hybrid | onsite, or a list: [remote, hybrid]
+  allowed_locations: [Austin, Round Rock, Cedar Park]
+                                        # keep jobs located here OR remote; empty = anywhere
+  remote_us_only: true                  # drop "Remote – UK / India / Canada…" (set false outside the US)
+  prefer_remote: false                  # true = remote jobs searched and applied to first
+  remote_only: false                    # true = every run remote-only (same as `--remote`)
+  max_per_query: 30
+  easy_apply_only: false
+  resolve_links: true                   # follow aggregator links to where each job really applies
+  ats_search:                     # find employers on Greenhouse/Lever/Ashby/Workable by searching for your titles
+    enabled: true                 # needs BRAVE_API_KEY (or SERPAPI_KEY) in .env; skipped without one
+    sites: [greenhouse, lever, ashby, workable, yc]
+    max_queries: 6                # first N titles per run; ~6 searches each (36 per run)
+    max_boards: 60                # employer boards read per run (new + remembered)
+    remember_days: 30             # boards found keep being checked this long, without new searches
+  companies:                            # employers checked directly on every run (public job-board APIs)
+    - {name: Stripe, ats: greenhouse, slug: stripe}
+    - {name: Ramp, ats: ashby, slug: ramp}
+    - {name: Plaid, ats: lever, slug: plaid}
+    # - {name: Example Corp, ats: workday, url: "https://example.wd5.myworkdayjobs.com/Careers"}
+    # also: smartrecruiters, workable, recruitee. Check them with `applyloop companies check`.
+
+# Job-alert emails (add `alerts` to search.sources). Credentials in .env (app password).
+email_alerts:
+  imap_host: imap.gmail.com
+  folder: JobAlerts                     # label/folder your mail filter puts the alerts in
+  lookback_days: 3
+  senders: [indeed.com, glassdoor.com, linkedin.com]
+  find_on_company_site: true            # look each job up on the employer's own site so it can be auto-applied
+
+# ── Filters (run before any AI call, so they cost nothing) ─────────────────
+filters:
+  title_exclude: [intern, internship, junior, "entry level", "new grad", manager, director,
+                  "vice president", principal, staff, sales, recruiter]
+  company_blocklist: []                 # e.g. your current employer
+  description_exclude:                  # regexes, case-insensitive
+    - "u\\.?s\\.? citizens? only"
+  min_salary: 0                         # annual, your currency; 0 = don't filter (no salary listed = kept)
+  exclude_staffing: true                # drop staffing agencies / "our client" / C2C / W2-only postings
+  exclude_w2: true             # drop any posting that mentions W2 (agency contract roles)
+  staffing_firms_extra: []              # more agency names to drop
+  exclude_clearance: true               # drop jobs needing a security clearance (Secret, TS/SCI, polygraph,
+                                        # Public Trust); "no clearance required" is kept
+
+# ── Applying ───────────────────────────────────────────────────────────────
+apply:
+  mode: review            # review = fill the form, pause, you approve each submit
+                          # auto   = find, score, tailor and submit unattended (see auto:)
+                          # queue  = prepare unattended; approve a batch later
+  daily_cap: 20           # hard cap on submissions per day
+  max_job_age_days: 7     # auto-apply only to jobs posted within this many days (older stay queued); 0 = no limit
+  delay_seconds: [20, 60] # random pause between applications
+  email_code_wait_minutes: 2   # "enter the code we emailed you": how long to wait for you to type it
+  cover_letter: required  # required = only when the form makes it mandatory | auto | never
+  tailor: auto            # auto (only when the base CV misses JD skills you have) | always | never
+  screenshots: true
+  auto:
+    min_score: 4.0        # auto-apply only at or above this; the rest wait in `applyloop queue list`
+    max_per_run: 10
+    max_per_company_per_week: 3
+    allow_ai_answers: false   # true = also submit AI-drafted answers to unusual questions without review
+    headless: false           # watch the first runs; set true once you trust it
+    # track_rotation:         # which track gets first pick each day (others fill the rest)
+    #   mon: data_engineering
+    #   tue: ml_engineering
+    #   default: data_engineering
+    rotation_only: false      # true = only search/apply today's track
+
+# ── Browser ────────────────────────────────────────────────────────────────
+browser:
+  engine: chromium        # chromium | firefox (firefox works on Macs that block Chrome automation)
+  mode: profile           # profile = applyloop-owned browser profile (log in once with `applyloop login`)
+                          # cdp     = attach to a Chrome started with --remote-debugging-port
+                          # manual  = never drive a browser; applyloop prepares, you click apply
+  profile_dir: ~/.applyloop/chrome-profile
+  cdp_url: http://127.0.0.1:9222
+  channel: chrome
+  headless: false
+
+# ── AI provider ────────────────────────────────────────────────────────────
+llm:
+  use: auto               # openai | anthropic | gemini | ollama | auto (first provider with a key in .env)
+  reasoning_effort: low
+  # Per provider: a cheap default model + a stronger model only for CV rewrites (tailor).
+  # List the model IDs your key can use:  applyloop llm models --ai <provider>
+  providers:
+    openai:    {model: "", tasks: {tailor: ""}}
+    anthropic: {model: "", tasks: {tailor: ""}}
+    gemini:    {model: "", tasks: {tailor: ""}}     # use a paid key
+    ollama:    {model: llama3.1}                    # free, local
+  # Tasks: score | route | tailor | answers | cover. A task may name another provider,
+  # e.g. tasks: {score: "anthropic:<model-id>"}
+  prices: {}              # model: [input $/1M tokens, output $/1M] — estimates for `applyloop llm usage`
+
+storage:
+  db: data/applyloop.db
+sheets:
+  enabled: false
+  spreadsheet_id: ""
+  worksheet: Applications
+  service_account_json: ~/.applyloop/google-service-account.json

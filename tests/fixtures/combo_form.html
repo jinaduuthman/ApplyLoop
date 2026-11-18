@@ -1,0 +1,26 @@
+<!doctype html><html><body>
+<div class="q"><label id="l1" for="c1">Please select the country where you currently reside.*</label>
+ <input id="c1" role="combobox" aria-autocomplete="list" aria-required="true" autocomplete="off">
+ <ul id="m1" role="listbox" style="display:none"></ul></div>
+<div class="q"><label for="c2">Will you require Stripe to sponsor you for a work permit now or in the future?*</label>
+ <input id="c2" role="combobox" aria-required="true"><ul id="m2" role="listbox" style="display:none"></ul></div>
+<div class="q"><label for="c3">Have you ever been employed by Stripe or a Stripe affiliate?*</label>
+ <input id="c3" role="combobox" aria-required="true"><ul id="m3" role="listbox" style="display:none"></ul></div>
+<fieldset><legend>Please select the country or countries you anticipate working in for the role in which you are applying. *</legend>
+ <label><input type="checkbox" name="countries[]" value="AU"> Australia</label>
+ <label><input type="checkbox" name="countries[]" value="CA"> Canada</label>
+ <label><input type="checkbox" name="countries[]" value="US"> United States</label></fieldset>
+<button type="button">Submit Application</button>
+<script>
+const opts = {m1: ['Canada','United Kingdom','United States of America','Other'], m2: ['Yes','No'], m3: ['Yes','No']};
+window.picked = {};
+for (const [inp, menu] of [['c1','m1'],['c2','m2'],['c3','m3']]) {
+  const i = document.getElementById(inp), m = document.getElementById(menu);
+  const render = () => { const q = i.value.toLowerCase();
+    m.innerHTML = opts[menu].filter(o => o.toLowerCase().includes(q)).map(o => `<li role="option">${o}</li>`).join('');
+    m.style.display = 'block';
+    m.querySelectorAll('li').forEach(li => li.onclick = () => { window.picked[inp] = li.innerText; i.value = ''; m.style.display = 'none'; }); };
+  i.addEventListener('click', render); i.addEventListener('input', render);
+  i.addEventListener('keydown', e => { if (e.key === 'Escape') m.style.display = 'none'; });
+}
+</script></body></html>

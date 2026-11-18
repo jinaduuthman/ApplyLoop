@@ -1,0 +1,12 @@
+# Voluntary self-identification (EEO) answers — used only for those questions.
+# Each key: `decline`, or a list of acceptable phrasings (most preferred first).
+# applyloop picks the first form option matching a phrasing (whole words, so "Male"
+# never matches "Female"); if none match, it picks the form's "decline" option.
+gender: decline              # e.g. [Male, Man]
+race: decline                # e.g. [Black or African American, Black, African American]
+hispanic_latino: decline     # e.g. ["No", "Not Hispanic or Latino"]
+veteran: decline             # e.g. ["I am not a protected veteran", "not a protected veteran", "Not applicable"]
+disability: decline          # e.g. ["No, I do not have a disability", "do not have a disability", "No"]
+transgender: decline
+sexual_orientation: decline
+pronouns: decline

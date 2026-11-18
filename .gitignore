@@ -1,0 +1,39 @@
+# ── secrets ──
+.env
+.env.*
+
+# ── your personal configuration (the *.example.yml templates are committed) ──
+config/applyloop.yml
+config/profile.yml
+config/answers.yml
+config/eeo.yml
+config/jobpilot.yml
+
+# ── your CVs and personal documents ──
+resumes/*
+!resumes/README.md
+cv.md
+docs/Resume_*
+*.pdf
+!tests/fixtures/*.pdf
+
+# ── generated data: applications DB, logs, tailored CVs, screenshots, reports ──
+data/*
+!data/.gitkeep
+output/
+reports/
+_to_delete/
+*.tgz
+*.bak
+
+# ── build / packaging ──
+dist/
+build/
+
+# ── Python / tooling ──
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.browsers/
+.DS_Store

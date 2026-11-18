@@ -1,0 +1,19 @@
+<!doctype html><html><body>
+<div class="autofill"><p>Autofill from resume</p><p>Upload your resume here to autofill key application fields.</p>
+ <input type="file" id="af" style="opacity:0;position:absolute"></div>
+<div class="ashby-application-form-field-entry"><label class="_required" for="nm">Legal Name</label><input id="nm" required placeholder="Type here..."></div>
+<div class="ashby-application-form-field-entry"><label class="_required" for="em">Email</label><input id="em" type="email" required></div>
+<div class="ashby-application-form-field-entry"><label class="_required" for="rs">Resume</label><input id="rs" type="file" required></div>
+<div class="ashby-application-form-field-entry"><label class="_required" for="ph">Phone Number</label><input id="ph" type="tel" required></div>
+<div class="ashby-application-form-field-entry"><label class="_required">When can you start a new role?</label><input id="dt" placeholder="Pick date..." required></div>
+<div class="ashby-application-form-field-entry"><label class="_heading _required" for="yn1">Are you authorized to work in the country where the job is located?</label>
+ <div class="yesno"><button type="button" aria-pressed="false">Yes</button><button type="button" aria-pressed="false">No</button><input type="checkbox" id="yn1" style="display:none"></div></div>
+<div class="ashby-application-form-field-entry"><label class="_heading _required" for="yn2">Will you now or in the future require sponsorship for employment visa status in this country?</label>
+ <div class="yesno"><button type="button" aria-pressed="false">Yes</button><button type="button" aria-pressed="false">No</button><input type="checkbox" id="yn2" style="display:none"></div></div>
+<button type="button" id="sub">Submit Application</button>
+<script>
+document.getElementById('af').addEventListener('change', () => { window.autofilled = true;
+  document.querySelectorAll('input[type=text], input:not([type]), input[type=email], input[type=tel]').forEach(i => i.value = ''); });
+document.querySelectorAll('.yesno').forEach(box => box.querySelectorAll('button').forEach(b => b.onclick = () => {
+  box.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false')); b.setAttribute('aria-pressed', 'true'); }));
+</script></body></html>

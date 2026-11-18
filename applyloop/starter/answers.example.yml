@@ -1,0 +1,83 @@
+# Screening-question answer bank (config/answers.yml, created by `applyloop init`).
+# REVIEW EVERY ANSWER before your first submit.
+#
+# applyloop answers application questions from here first (trusted), then from
+# profile.yml, and only then drafts with AI (flagged for review, never auto-submitted
+# unless apply.auto.allow_ai_answers is true).
+#
+# Each rule: `match` = list of regexes (case-insensitive); `answer` = text, or for
+# yes/no and choice questions the option to pick. A list answer = alternatives, the
+# first one the form offers is used. The most specific (longest) match wins.
+# `{name}` pulls a value from `defaults`; a default can be a per-track mapping.
+# Unanswered questions are saved: `applyloop answers pending` shows them.
+
+defaults:
+  years_experience: 5
+  notice_period: "2 weeks"
+  willing_to_relocate: "No"
+  remote_preference: "Remote or hybrid"
+  current_employer: "Acme Corp"
+  current_title:                # per track (should match the CV that's sent); `default` otherwise
+    data_engineering: "Senior Data Engineer"
+    default: "Senior Engineer"
+  highest_degree:               # a list = alternatives tried against the form's options
+    ml_engineering: ["Doctor of Philosophy (Ph.D.)", "PhD", "Doctorate"]
+    default: ["Master's Degree", "Master's", "Masters", "Master of Science"]
+  past_employers: [Acme Corp]   # "have you ever worked for <company>?" → Yes only for these
+
+rules:
+  # Work authorization — set these to YOUR situation.
+  - match: ["authori[sz]ed to work.{0,120}without (needing|requiring|the need for|need of|any need for) (visa |employer |company )?sponsorship",
+            "(able|eligible) to work.{0,120}without (needing|requiring|the need for) (visa )?sponsorship"]
+    answer: "Yes"
+  - match: ["require (visa )?sponsorship", "need (visa )?sponsorship", "sponsorship (now or in the future)?",
+            "sponsor (you|me)", "work permit", "immigration sponsorship",
+            "employment-based visa", "visa (status|petition)", "file a petition", "h-?1b (sponsorship|petition|transfer)"]
+    answer: "No"
+  - match: ["authori[sz]ed to work", "legally (eligible|authori[sz]ed|permitted) to work", "right to work"]
+    answer: "Yes"
+  - match: ["were you referred", "referred (to this (role|position|job|opportunity) )?by (a|an) (current )?", "(employee )?referral\\?$",
+            "did (a|an) (current )?(employee|team member) refer you"]
+    answer: "No"
+  - match: ["years of (professional |relevant |work )?experience"]
+    answer: "{years_experience}"
+  - match: ["notice period", "when can you start", "start date", "earliest start"]
+    answer: "{notice_period}"
+  - match: ["willing to relocate", "open to relocat"]
+    answer: "{willing_to_relocate}"
+  - match: ["desired (salary|compensation|pay)", "salary expectations?", "expected (salary|compensation)"]
+    answer: "{target_comp}"            # from profile.yml → compensation.target_range
+  - match: ["comfortable (working )?(on[- ]?site|in office|hybrid)", "commute"]
+    answer: "Yes"
+  - match: ["highest (level of )?(education|degree) (completed|obtained|earned|attained)", "completed degree"]
+    answer: "{highest_degree}"
+  - match: ["highest (level of )?education", "^degree$", "degree (pursued|program|level|type)"]
+    answer: "{highest_degree}"
+  - match: ["(ever )?(been )?(employed|worked) (by|for|at)", "previously (worked|been employed)", "former employee"]
+    answer: "{previously_employed}"    # Yes only if the company is in past_employers
+  - match: ["current or (most recent|previous) (job )?title", "current (job )?title", "most recent (job )?title"]
+    answer: "{current_title}"
+  - match: ["current or (most recent|previous) employer", "current (employer|company)", "most recent employer"]
+    answer: "{current_employer}"
+  - match: ["countr(y|ies) (you )?(anticipate|expect|plan|intend)", "countr(y|ies) of (residence|work)", "currently reside", "where do you (currently )?live"]
+    answer: ["United States", "United States of America", "USA", "US", "U.S."]
+  - match: ["plan to work remotely", "work (from a )?remote(ly)?\\?", "prefer to work remote"]
+    answer: "Yes"
+  - match: ["opt[- ]?in .*(whatsapp|sms|text messag)", "receive (whatsapp|sms|text) messages"]
+    answer: "Yes"
+  - match: ["^school( name)?$", "(school|university|college|institution) (attended|name)", "name of (your )?(school|university|college)"]
+    answer: "Your University"
+  # Acknowledgements (privacy notice, "information is true", AI-use attestations, terms).
+  # Lets unattended runs answer them. Delete this rule to always do these yourself.
+  - match: ["^i (understand|acknowledge|agree|certify|confirm)\\b", "(candidate |applicant )?privacy (policy|notice)",
+            "terms (and|&) conditions", "information .*(true|accurate|correct)",
+            "attestation", "i attest"]
+    answer: ["Yes", "I agree", "I Agree", "I acknowledge", "I understand", "Agree", "Acknowledge", "Confirm"]
+  - match: ["cities .*available to work", "(which|what) (city|cities|office|offices|locations?) .*\\b(work|based)\\b", "preferred (work |office )?locations?"]
+    answer: ["Austin", "Remote"]
+  - match: ["non-?compete", "non-?solicitation", "restrictive covenant"]
+    answer: "No"                       # confirm for yourself
+  - match: ["how did you hear"]
+    answer: ["Company Website", "Careers Page", "Company Careers", "Job Board", "Other"]
+
+# EEO questions (gender, race, veteran, disability, ...) are answered from config/eeo.yml.

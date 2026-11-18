@@ -1,0 +1,41 @@
+<!doctype html><html><body>
+<h1>Apply: Senior Data Engineer</h1>
+<form id="f" onsubmit="return false">
+ <div class="step" id="s1">
+  <label for="fn">First name</label><input id="fn" name="firstName" value="Jane">
+  <label for="ln">Last name</label><input id="ln" name="lastName" required>
+  <label for="em">Email</label><input id="em" type="email" required>
+  <label for="ph">Phone number</label><input id="ph" type="tel">
+  <button type="button" onclick="go(2)">Continue</button>
+ </div>
+ <div class="step" id="s2" style="display:none">
+  <label for="cv">Upload resume</label><input id="cv" type="file" name="resume" required>
+  <button type="button" onclick="go(3)">Continue</button>
+ </div>
+ <div class="step" id="s3" style="display:none">
+  <fieldset><legend>Are you legally authorized to work in the United States?</legend>
+   <label><input type="radio" name="auth" value="y" required> Yes</label>
+   <label><input type="radio" name="auth" value="n"> No</label></fieldset>
+  <fieldset><legend>Will you now or in the future require sponsorship?</legend>
+   <label><input type="radio" name="spons" value="y"> Yes</label>
+   <label><input type="radio" name="spons" value="n"> No</label></fieldset>
+  <label for="yrs">How many years of experience do you have with Snowflake?</label>
+  <select id="yrs" required><option value="">Select an option</option><option>0-2</option><option>3-5</option><option>6-10</option><option>10+</option></select>
+  <label for="eth">What is your ethnicity?</label>
+  <select id="eth"><option value="">Select</option><option>Hispanic or Latino</option><option>Not Hispanic or Latino</option><option>I don't wish to answer</option></select>
+  <div id="whyq"><label for="why">Why do you want to work at Acme?</label><textarea id="why" required></textarea></div>
+  <button type="button" onclick="go(4)">Continue</button>
+ </div>
+ <div class="step" id="s4" style="display:none">
+  <p>Please review your application.</p>
+  <button type="button" onclick="done()">Submit your application</button>
+ </div>
+</form>
+<div id="ok" style="display:none"><h2>Your application has been submitted!</h2></div>
+<script>
+ if (location.hash === '#nowhy') document.getElementById('whyq').remove();
+ function go(n){ document.querySelectorAll('.step').forEach(s=>s.style.display='none'); document.getElementById('s'+n).style.display='block'; }
+ function done(){ window.__answers = {ln: ln.value, em: em.value, cv: cv.files.length, auth: (document.querySelector('[name=auth]:checked')||{}).value,
+   spons: (document.querySelector('[name=spons]:checked')||{}).value, yrs: yrs.value, eth: eth.value};
+   document.getElementById('f').style.display='none'; document.getElementById('ok').style.display='block'; }
+</script></body></html>
